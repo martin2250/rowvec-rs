@@ -1,0 +1,10 @@
+[package]
+name = "rowvec"
+version = "0.0.1"
+authors = ["Martin Pittermann <martinp2250@gmail.com>"]
+edition = "2018"
+description = "Efficient Vectors for storing data in fixed (at runtime) width rows."
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
