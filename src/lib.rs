@@ -53,6 +53,22 @@ impl<T> RowVec<T> {
         self.data.chunks(self.columns)
     }
 
+    pub fn remove_range<R>(&mut self, range: R) 
+    where R: RangeBounds<usize>,
+    {
+        let start = match range.start_bound() {
+            Bound::Included(i) => Bound::Included(i*self.columns),
+            Bound::Excluded(_) => todo![],
+            Bound::Unbounded => Bound::Unbounded,
+        };
+        let end = match range.end_bound() {
+            Bound::Included(i) => Bound::Excluded((i + 1)*self.columns),
+            Bound::Excluded(i) => Bound::Excluded(i*self.columns),
+            Bound::Unbounded => Bound::Unbounded,
+        };
+        self.data.drain((start,end));
+    }
+
     pub fn iter_mut(&mut self) -> std::slice::ChunksMut<'_, T> {
         debug_assert!(self.data.len() % self.columns == 0);
         self.data.chunks_mut(self.columns)
@@ -142,12 +158,22 @@ impl <'a, T> RowSlice<'a, T> {
         self.data.chunks(self.columns)
     }
 
-    pub fn range(&self, start: usize, end: usize) -> RowSlice<'a, T> {
-        let s = start * self.columns;
-        let e = end * self.columns;
+    pub fn range<R>(&self, range: R) -> RowSlice<'a, T>
+    where R: RangeBounds<usize>,
+     {
+        let start = match range.start_bound() {
+            Bound::Included(i) => i*self.columns,
+            Bound::Excluded(i) => (i+1)*self.columns,
+            Bound::Unbounded => 0,
+        };
+        let end = match range.end_bound() {
+            Bound::Included(i) => (i + 1)*self.columns,
+            Bound::Excluded(i) => i*self.columns,
+            Bound::Unbounded => self.data.len(),
+        };
         RowSlice {
             columns: self.columns,
-            data: &self.data[s..e],
+            data: &self.data[std::ops::Range{start: start, end: end}],
         }
     }
 

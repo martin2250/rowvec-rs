@@ -13,4 +13,7 @@ fn common_ops() {
     let s = r.slice().range(1, 2);
     assert!(s[0][0] == 2);
     assert!(s[0][1] == 3);
+    r.remove_range(0..1);
+    assert!(r[0][0] == 2);
+    assert!(r[0][1] == 3);
 }
